@@ -33,7 +33,6 @@ public class SaveMusic : MonoBehaviour
         }
         else if (scene.name == "Game")
         {
-            // To stop the music when the game starts (optional setting for future feature)
             // audioSource.Stop();
         }
     }

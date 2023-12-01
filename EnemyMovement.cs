@@ -6,7 +6,6 @@ public class EnemyMovement : MonoBehaviour
 {
     public float jumpForce = 15f;
     public float jumpDelay = 2f;
-    
     private bool isJumping = false;
     private Rigidbody2D rb;
 
@@ -35,6 +34,15 @@ public class EnemyMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Floor"))
         {
             isJumping = false;
+        }
+    }
+
+    void Update()
+    {
+        Vector2 viewPos = Camera.main.WorldToViewportPoint(transform.position);
+        if (viewPos.x < 0 || viewPos.x > 1 || viewPos.y < 0 || viewPos.y > 1)
+        {
+            Destroy(gameObject);
         }
     }
 }

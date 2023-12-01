@@ -5,14 +5,12 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
-    public Transform floorTransform;
+    public int maxEnemies = 1;
     public float spawnInterval = 2f;
-    private float floorWidth;
+    private List<GameObject> spawnedEnemies = new List<GameObject>();
 
     private void Start()
     {
-        floorWidth = floorTransform.localScale.x;
-
         StartCoroutine(SpawnRoutine());
     }
 
@@ -21,17 +19,33 @@ public class EnemySpawner : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(spawnInterval);
-            SpawnEnemy();
+
+            spawnedEnemies.RemoveAll(enemy => enemy == null);
+
+            if (spawnedEnemies.Count < maxEnemies)
+            {
+                SpawnEnemy();
+            }
         }
     }
 
     void SpawnEnemy()
     {
-        float randomX = floorTransform.position.x + Random.Range(-floorWidth / 2, floorWidth / 2);
-        float spawnY = floorTransform.position.y + 1;
+        GameObject[] floors = GameObject.FindGameObjectsWithTag("Floor");
+        
+        if (floors.Length > 0)
+        {
+            GameObject floor = floors[Random.Range(0, floors.Length)];
+            Vector3 floorPosition = floor.transform.position;
+            Vector3 floorSize = floor.GetComponent<Renderer>().bounds.size;
 
-        Vector2 spawnPosition = new Vector2(randomX, spawnY);
-
-        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            float enemySpawnX = Random.Range(floorPosition.x - floorSize.x / 2, floorPosition.x + floorSize.x / 2);
+            float enemySpawnY = floorPosition.y + floorSize.y / 2 + 0.5f;
+            
+            Vector3 spawnPosition = new Vector3(enemySpawnX, enemySpawnY, floorPosition.z);
+            GameObject newEnemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            
+            spawnedEnemies.Add(newEnemy);
+        }
     }
 }
